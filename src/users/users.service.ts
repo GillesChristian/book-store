@@ -77,16 +77,14 @@ export class UsersService {
 
     return updatedUser;
   }
-  async deleteUser(id: string): Promise<User> {
+  async deleteUser(id: string): Promise<void> {
     const userExists = await this.getUserById(id);
     if (!userExists) {
       throw new NotFoundException('User does not exist');
     }
 
-    const deletedUser = await this.prisma.user.delete({
+    await this.prisma.user.delete({
       where: { id },
     });
-
-    return deletedUser;
   }
 }
