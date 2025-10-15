@@ -25,7 +25,7 @@ export class UsersService {
       where: { id },
     });
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
     return user;
   }
@@ -35,7 +35,8 @@ export class UsersService {
       where: { email },
     });
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user)
+      throw new NotFoundException(`User with email ${email} not found`);
 
     return user;
   }
@@ -46,7 +47,8 @@ export class UsersService {
       select: { password: true },
     });
 
-    if (!user) return null;
+    if (!user)
+      throw new NotFoundException(`User with email ${email} not found`);
 
     return user.password;
   }
@@ -54,7 +56,9 @@ export class UsersService {
   async createUser(data: CreateUserDto): Promise<User> {
     const userExists = await this.getUserByEmail(data.email);
     if (userExists) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException(
+        `User with email ${data.email} already exists`,
+      );
     }
 
     const newUser = await this.prisma.user.create({
@@ -65,10 +69,7 @@ export class UsersService {
   }
 
   async updateUser(id: string, data: Partial<updateUserDto>): Promise<User> {
-    const userExists = await this.getUserById(id);
-    if (!userExists) {
-      throw new NotFoundException('User does not exist');
-    }
+    await this.getUserById(id);
 
     const updatedUser = await this.prisma.user.update({
       where: { id },
@@ -77,11 +78,9 @@ export class UsersService {
 
     return updatedUser;
   }
+
   async deleteUser(id: string): Promise<void> {
-    const userExists = await this.getUserById(id);
-    if (!userExists) {
-      throw new NotFoundException('User does not exist');
-    }
+    await this.getUserById(id);
 
     await this.prisma.user.delete({
       where: { id },
