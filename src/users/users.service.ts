@@ -25,7 +25,7 @@ export class UsersService {
       where: { id },
     });
 
-    if (!user) return null;
+    if (!user) throw new NotFoundException('User not found');
 
     return user;
   }
@@ -35,7 +35,7 @@ export class UsersService {
       where: { email },
     });
 
-    if (!user) return null;
+    if (!user) throw new NotFoundException('User not found');
 
     return user;
   }
@@ -67,7 +67,7 @@ export class UsersService {
   async updateUser(id: string, data: Partial<updateUserDto>): Promise<User> {
     const userExists = await this.getUserById(id);
     if (!userExists) {
-      throw new ConflictException('User does not exist');
+      throw new NotFoundException('User does not exist');
     }
 
     const updatedUser = await this.prisma.user.update({
