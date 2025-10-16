@@ -158,4 +158,18 @@ export class BookService {
       where: { id },
     });
   }
+
+  /**
+   * Toggle book availability
+   * @param id - UUID of the book to toggle
+   * @throws NotFoundException if book doesn't exist
+   */
+  async toggleBookAvailability(id: string): Promise<Book> {
+    const book = await this.getBookById(id);
+
+    return await this.prisma.book.update({
+      data: { available: !book.available },
+      where: { id },
+    });
+  }
 }
