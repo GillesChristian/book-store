@@ -17,7 +17,7 @@ export class BookService {
    * @returns Array of all books
    */
   async getBooks(): Promise<Book[]> {
-    return await this.prisma.book.findMany({
+    return this.prisma.book.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -44,7 +44,7 @@ export class BookService {
    * @returns Array of available books (empty array if none found)
    */
   async getAvailableBooks(): Promise<Book[]> {
-    return await this.prisma.book.findMany({
+    return this.prisma.book.findMany({
       where: { available: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -56,7 +56,7 @@ export class BookService {
    * @returns Array of books by the author (empty array if none found)
    */
   async getBooksByAuthor(author: string): Promise<Book[]> {
-    return await this.prisma.book.findMany({
+    return this.prisma.book.findMany({
       where: {
         author: {
           contains: author,
@@ -72,7 +72,7 @@ export class BookService {
    * @returns Array of matching books (empty array if none found)
    */
   async searchBooks(searchTerm: string): Promise<Book[]> {
-    return await this.prisma.book.findMany({
+    return this.prisma.book.findMany({
       where: {
         OR: [
           {
@@ -97,7 +97,7 @@ export class BookService {
    * @returns The existing book or null if not found
    */
   async bookExists(author: string, title: string): Promise<Book | null> {
-    return await this.prisma.book.findFirst({
+    return this.prisma.book.findFirst({
       where: {
         author,
         title,
@@ -118,7 +118,7 @@ export class BookService {
         `Book with title "${data.title}" by author "${data.author}" already exists`,
       );
     }
-    return await this.prisma.book.create({
+    return this.prisma.book.create({
       data: {
         title: data.title,
         author: data.author,
@@ -137,11 +137,10 @@ export class BookService {
   async updateBook(id: string, data: UpdateBookDto): Promise<Book> {
     await this.getBookById(id);
 
-    return await this.prisma.book.update({
+    return this.prisma.book.update({
       where: { id },
       data: {
         ...data,
-        updatedAt: new Date(),
       },
     });
   }
@@ -167,7 +166,7 @@ export class BookService {
   async toggleBookAvailability(id: string): Promise<Book> {
     const book = await this.getBookById(id);
 
-    return await this.prisma.book.update({
+    return this.prisma.book.update({
       data: { available: !book.available },
       where: { id },
     });
