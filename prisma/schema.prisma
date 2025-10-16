@@ -21,6 +21,8 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  loans Loan[]
 }
 
 model Book {
@@ -31,4 +33,23 @@ model Book {
   available   Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+
+  loans Loan[]
+}
+
+
+model Loan {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String   @map("user_id")
+  bookId    String   @map("book_id")
+  loanDate  DateTime @default(now()) @map("loan_date")
+  returnDate DateTime? @map("return_date")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+  book Book @relation(fields: [bookId], references: [id])
+
+  @@index([userId], name: "idx_user_id")
+  @@index([bookId], name: "idx_book_id")
 }
