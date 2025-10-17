@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { Book } from 'generated/prisma';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book-dto';
 
@@ -170,5 +170,19 @@ export class BookService {
       data: { available: !book.available },
       where: { id },
     });
+  }
+
+  /**
+   * Check book availability
+   * @param id - UUID of the book
+   * @throws NotFoundException if book doesn't exist
+   * @throws ConflictException if book is not available
+   */
+  async checkBookAvailability(id: string): Promise<void> {
+    const book = await this.getBookById(id);
+
+    if (!book.available) {
+      throw new ConflictException(`Book with ID ${id} is not available`);
+    }
   }
 }
