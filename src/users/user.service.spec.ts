@@ -2,6 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -93,12 +94,12 @@ describe('UsersService', () => {
       expect(user).toEqual(mockUser);
     });
 
-    it('should return null if user not found', async () => {
+    it('should throw a NotFoundException if user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      const user = await service.getUserById('nonexistent-id');
-
-      expect(user).toBeNull();
+      await expect(service.getUserById('nonexistent-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
